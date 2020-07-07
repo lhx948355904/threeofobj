@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+
+		<title></title>
+
+		<link rel="stylesheet" type="text/css" href="css/reset.css" />
+		<link rel="stylesheet" type="text/css" href="css/rangeslider.css" />
+
+		<link rel="stylesheet" type="text/css" media="all" href="css/zTreeStyle.css" />
+		<link rel="stylesheet" type="text/css" media="all" href="css/treeSelect.css" />
+
+		<link rel="stylesheet/less" type="text/css" href="css/obj.less" />
+
+		<script src="js/less.js" type="text/javascript" charset="utf-8"></script>
+
+		<script type="text/javascript" src="js/jquery-2.0.3.min.js"></script>
+		
+		<script src="ownjs/mk3d.js" type="text/javascript" charset="utf-8"></script>
+
+		<script src="js/rangeslider.min.js" type="text/javascript" charset="utf-8"></script>
+
+		<script src="js/jquery.ztree.all.min.js" type="text/javascript" charset="utf-8"></script>
+		<script src="js/treeSelect.js" type="text/javascript" charset="utf-8"></script>
+	</head>
+
+	<body>
+		<!--<div id="percent"></div>-->
+		<div id="label"></div>
+
+		<div id="menu">
+			<div class="btns">
+				<img src="img/open.png" id="toggleMenu"  />
+			</div>
+			<ul>
+				<li>
+					<div id="reset">
+						<img src="img/chongzhi.png" />
+						<p>重置</p>
+					</div>
+					<div>
+						<img src="img/PMI.png" />
+						<p>PMI</p>
+					</div>
+				</li>
+				<li>
+					<div id="shitu" class="shitu">
+						<img src="img/shitu.png" />
+						<p>视图</p>
+						<ul>
+							<li>
+								<img src="img/bianxianshangse.png" />
+								<p>边线上色</p>
+							</li>
+							<li>
+								<img src="img/shangse.png" />
+								<p>上色</p>
+							</li>
+							<li>
+								<img src="img/yinxianxiaochu.png" />
+								<p>隐线消除</p>
+							</li>
+							<li id="yinxiankejian">
+								<img src="img/yinxiankejian.png" />
+								<p>隐线可见</p>
+							</li>
+						</ul>
+					</div>
+					<div>
+						<img src="img/toushi.png" />
+						<p>透视</p>
+					</div>
+				</li>
+				<li>
+					<div>
+						<img src="img/pizhu.png" />
+						<p>批注</p>
+					</div>
+					<div>
+						<img src="img/tuodong.png" />
+						<p>拖动</p>
+					</div>
+				</li>
+				<li>
+					<div>
+						<img src="img/baoqie.png" />
+						<p>刨切</p>
+					</div>
+					<div>
+						<img src="img/fuwei.png" />
+						<p>复位</p>
+					</div>
+				</li>
+				<li>
+					<div id="domTree">
+						<img src="img/jiegoushu.png" />
+						<p>结构树</p>
+					</div>
+					<div id="baozha" onclick="toggleInput('.baozha')">
+						<img src="img/baozha.png" />
+						<p>爆炸</p>
+					</div>
+				</li>
+				<li>
+					<div>
+						<img src="img/celiang.png" />
+						<p>测量</p>
+					</div>
+					<div>
+						<img src="img/pingyi.png" />
+						<p>平移</p>
+					</div>
+				</li>
+				<li>
+					<div>
+						<img src="img/suofang.png" />
+						<p>缩放</p>
+					</div>
+					<div>
+						<img src="img/xuanzhuan.png" />
+						<p>旋转</p>
+					</div>
+				</li>
+				<li>
+					<div onclick="fullScreen()">
+						<img src="img/quanping.png" />
+						<p>全屏</p>
+					</div>
+					<div>
+						<img src="img/biaoji.png" />
+						<p>标记</p>
+					</div>
+				</li>
+				<li>
+					<div class="beijingse" onclick="toggleInput('.beijingse')">
+						<img src="img/beijingse.png" />
+						<p>背景色</p>
+
+					</div>
+				</li>
+			</ul>
+		</div>
+
+		<div class="baozhaDiv">
+			<input type="range" name="range" id="range" min="0" max="30" value="0" data-rangeslider/>
+		</div>
+
+		<div class="beijingseDiv">
+			<input type="range" name="range" id="range" min="0" max="50" value="0" data-rangeslider/>
+		</div>
+
+		<div class="treeSelect"></div>
+		<!--<div class="table">
+			<div>
+				爆炸效果
+				<input type="range" name="range" id="range" value="" />
+			</div>
+			<div>
+				<span class="reset">重置</span>
+			</div>
+			
+		</div>-->
+
+	</body>
+
+	<script src="ownjs/range.js" type="text/javascript" charset="utf-8"></script>
+	<script>
+		let diyThree = new Lq({
+			path:"obj/",
+			obj:'08ZDT_HT.obj',
+			mtl:'08ZDT_HT.mtl'
+		})
+		
+		//重置
+		getEl("#reset").onclick = function(){
+			diyThree.reset();
+		}
+		
+		//隐线可见
+		getEl("#yinxiankejian").onclick = function(){
+			diyThree.showHideLine()
+		}
+		
+		//domtree
+		getEl("#domTree").onclick = function(){
+			diyThree.showTree()
+		}
+		
+		//
+		
+		console.log(diyThree)
+	</script>
+
+</html>
