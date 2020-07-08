@@ -1,10 +1,10 @@
 class Lq {
 	constructor(options) {
 		this.options = options;
-		
+
 		//加载依赖js
 		this.loadJS();
-		
+
 		window.onload = () => {
 			//初始化three
 			this.initThree(options)
@@ -46,30 +46,30 @@ class Lq {
 		this._importJs(threeJs, () => {
 			this._importJs(jsArr, () => {
 				console.info("资源加载完毕");
-				
+
 				this.colorsOfObj = {};
 				this.modelBox3 = new THREE.Box3();
 				this.changeMaterialBool = false;
 			})
 		})
 	}
-	
+
 	//重置3d
 	reset() {
 		this.initCamera();
 		this.initControls();
 	}
-	
+
 	//隐线可见
-	showHideLine(){
+	showHideLine() {
 		this.changeMaterialBool = !this.changeMaterialBool;
 		for(let x of this.meshArrs) {
 			this.changeMaterial(x)
-		}	
+		}
 	}
-	
+
 	//展示树图
-	showTree(){
+	showTree() {
 		let that = this;
 		if($(".treeSelect").html() == "") {
 			var arr = [{
@@ -95,18 +95,41 @@ class Lq {
 				zTreeOnClick(e) {
 					let name = e.target.innerHTML;
 					for(let x of that.meshArrs) {
+
 						if(x.name == name) {
 							that.changeMaterial(x)
 						}
 					}
 				}
 			})
-		}else{
+			//			$("#txt").click();
+		} else {
 			$(".treeSelect").toggle(200);
 		}
-		
-		
+
 	}
+	
+	//切换坐标轴
+	toggleAxisHelper(){
+		this.axisHelper.visible = !this.axisHelper.visible ;
+	}
+	
+	//全屏方法
+	fullScreen() {
+		var de = document.documentElement;
+		if(de.requestFullscreen) {
+			de.requestFullscreen();
+		} else if(de.mozRequestFullScreen) {
+			de.mozRequestFullScreen();
+		} else if(de.webkitRequestFullScreen) {
+			de.webkitRequestFullScreen();
+		} else if(de.msRequestFullscreen) {
+			de.msRequestFullscreen();
+		} else {
+			wtx.info("当前浏览器不支持全屏！");
+		}
+
+	};
 
 	// 场景
 	initScene() {
@@ -116,20 +139,21 @@ class Lq {
 	// 相机
 	initCamera() {
 		this.camera = new THREE.PerspectiveCamera(10, window.innerWidth / window.innerHeight, 0.1, 2000);
-		this.camera.position.set(50, 30, 30);
+		this.camera.position.set(50, 50, 50);
 	}
 
 	// 渲染器
 	initRenderer() {
 		if(Detector.webgl) {
 			this.renderer = new THREE.WebGLRenderer({
-				antialias: true
+				antialias: true,
+				alpha: true
 			});
 		} else {
 			this.renderer = new THREE.CanvasRenderer();
 		}
 		this.renderer.setSize(window.innerWidth, window.innerHeight);
-		this.renderer.setClearColor('black');
+		this.renderer.setClearColor(0x000000,0);
 		document.body.appendChild(this.renderer.domElement);
 	}
 
@@ -187,33 +211,32 @@ class Lq {
 
 	// 初始化轨迹球控件
 	initControls() {
-		this.controls = new THREE.TrackballControls(this.camera, this.renderer.domElement);
-		//controls.noRotate = true;
-		//controls.noPan = true;
+		this.mouseControls = new THREE.TrackballControls(this.camera, this.renderer.domElement);
+		this.mouseControls.staticMoving = false;
+		this.mouseControls.rotateSpeed = 0.5; // 旋转速度
+		this.mouseControls.zoomSpeed = 0.4; // 缩放速度
+		this.mouseControls.panSpeed = 0.1; // 平controls
+		//		this.controls.noRotate = true;
+		//		this.controls.noPan = true;
 	}
 
-	
-	
 	// 改变对象材质属性
-		changeMaterial(object) {
-			var color = new THREE.Color("rgb(65,105,225)");
+	changeMaterial(object) {
+		var color = new THREE.Color("rgb(65,105,225)");
 
-			var material = new THREE.MeshLambertMaterial({
-				//					transparent: object.material.transparent ? false : true,
-				opacity: 0.9,
-				emissiveIntensity: object.material.emissiveIntensity == 10 ? 1 : 1,
-				reflectivity: 1,
-				wireframe: this.changeMaterialBool ? true : false,
-				morphTargets: true,
-				skinning: true,
-				color: color.equals(object.material.color) ? this.colorsOfObj[object.uuid] : color
-			});
-			console.log(material.color)
-			object.material = material;
-		}
-		
-	
-	
+		var material = new THREE.MeshLambertMaterial({
+			//					transparent: object.material.transparent ? false : true,
+			opacity: 0.9,
+			emissiveIntensity: object.material.emissiveIntensity == 10 ? 1 : 1,
+			reflectivity: 1,
+			wireframe: this.changeMaterialBool ? true : false,
+			morphTargets: true,
+			skinning: true,
+			color: color.equals(object.material.color) ? this.colorsOfObj[object.uuid] : color
+		});
+		console.log(material.color)
+		object.material = material;
+	}
 
 	initThree(options) {
 		var that = this;
@@ -299,19 +322,25 @@ class Lq {
 
 		// 键盘按下触发的方法
 		function onKeyDown(event) {
+			console.log(event.keyCode)
 			switch(event.keyCode) {
 				case 13:
 					that.reset();
 					break;
+				//左
+				case 37:
+					var axis = new THREE.Vector3(1,1,0);//向量axis
+					for(let x of that.meshArrs) {
+						x.translateOnAxis(axis, 10);
+					}
 			}
 		}
-
-		
 
 		// 添加拖拽控件
 		function initDragControls() {
 			// 添加平移控件
 			var transformControls = new THREE.TransformControls(that.camera, that.renderer.domElement);
+			transformControls.setMode('scale')
 			that.scene.add(transformControls);
 
 			// 过滤不是 Mesh 的物体,例如辅助网格对象
@@ -331,11 +360,11 @@ class Lq {
 			});
 			// 开始拖拽
 			dragControls.addEventListener('dragstart', function(event) {
-				that.controls.enabled = false;
+				that.mouseControls.enabled = false;
 			});
 			// 拖拽结束
 			dragControls.addEventListener('dragend', function(event) {
-				that.controls.enabled = true;
+				that.mouseControls.enabled = true;
 			});
 		}
 
@@ -365,8 +394,9 @@ class Lq {
 		}
 
 		function initAxisHelper() {
-			var axisHelper = new THREE.AxisHelper(250);
-			that.scene.add(axisHelper);
+			that.axisHelper = new THREE.AxisHelper(400);
+			that.axisHelper.visible = false;
+			that.scene.add(that.axisHelper);
 		}
 
 		// 更新div的位置
@@ -385,8 +415,8 @@ class Lq {
 
 		// 更新控件
 		function update() {
-			that.controls.update();
-			that.controls.handleResize();
+			that.mouseControls.update();
+			that.mouseControls.handleResize();
 
 		}
 
@@ -399,8 +429,8 @@ class Lq {
 			initLight();
 			that.initControls();
 			initAxisHelper();
-			initDragControls();
-			//				initOrbitControls();
+			//			initDragControls();
+//			initOrbitControls();
 			//initGui();
 
 			addEventListener('click', onMouseClick, false);
@@ -418,100 +448,18 @@ class Lq {
 		init();
 		animate();
 
-		//重置
-		$("#reset").click(() => {
+		
 
-		})
-
-		//切换菜单
-		$("#toggleMenu").click((e) => {
-			var src = $(e.target).attr("src");
-			if($("#menu").width() == 78) {
-				$(e.target).attr("src", src.replace("open", "close"))
-				$("#menu").width(176)
-			} else {
-				$(e.target).attr("src", src.replace("close", "open"))
-				$("#menu").width(78)
-			}
-		})
-
-		//视图
-		$("#shitu").click(() => {
-			$(".shitu > ul").toggle(200);
-		})
-
-		//range插件
-		//		$(".")
-		function toggleInput(el) {
-			console.dir($(el)[0])
-			let x = $(el)[0].offsetLeft + 50 + 58;
-			let y = $(el)[0].offsetTop + 20 + 30 - $("#menu>ul")[0].scrollTop;
-
-			$(el + "Div").css({
-				'left': x + "px",
-				'top': y + 'px'
-			}).toggle(200);
-		}
-
-		$("#range").on('input', (e) => {
+		$("#blastRange").on('input', (e) => {
 			for(let x of this.meshArrs) {
-				this.modelExplode(x, e.target.value * 0.32)
+				this.modelExplode(x, e.target.value * 0.4)
 			}
 		})
-
-		/*$("#domTree").click(() => {
-			if($(".treeSelect").html() == "") {
-				var arr = [{
-					name: this.meshParent.name || "模型",
-					id: 1,
-					pId: 0,
-					type: '0',
-				}]
-
-				for(let x in this.meshArrs) {
-					arr.push({
-						name: this.meshArrs[x].name,
-						id: x + '0',
-						pId: 1,
-						type: '1',
-					})
-				}
-
-				$(".treeSelect").treeSelect({
-					data: arr,
-					inputId: "txt",
-					//点击 获取到指定obj 变色
-					zTreeOnClick(e) {
-						let name = e.target.innerHTML;
-						for(let x of this.meshArrs) {
-							if(x.name == name) {
-								that.changeMaterial(x)
-							}
-						}
-					}
-				})
-			}
-
-			$(".treeSelect").toggle(200)
-
-		})*/
-
-		function fullScreen() {
-			var de = document.documentElement;
-
-			if(de.requestFullscreen) {
-				de.requestFullscreen();
-			} else if(de.mozRequestFullScreen) {
-				de.mozRequestFullScreen();
-			} else if(de.webkitRequestFullScreen) {
-				de.webkitRequestFullScreen();
-			} else if(de.msRequestFullscreen) {
-				de.msRequestFullscreen();
-			} else {
-				wtx.info("当前浏览器不支持全屏！");
-			}
-
-		};
+		
+		$("#backgroundRange").on('input', (e) => {
+			let v = e.target.value * 5;
+			$("body").css("background",`rgb(${v},${v},${v})`)
+		})
 	}
 
 	_importJs(url, callback) {

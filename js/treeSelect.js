@@ -156,9 +156,9 @@
             zTreeObj = $.fn.zTree.init($("#_treeDom"), setting,this.settings.data);
 
             // 设置下拉菜单以及input点击不自动关闭
-            $(document).on('click', function (e) {
-                if(e.target.closest(".treeSelect") == null)$_element.removeClass("show");
-            });
+//          $(document).on('click', function (e) {
+//              if(e.target.closest(".treeSelect") == null)$_element.removeClass("show");
+//          });
 
         },
         init: function(){

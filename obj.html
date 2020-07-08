@@ -84,9 +84,9 @@
 					</div>
 				</li>
 				<li>
-					<div>
-						<img src="img/baoqie.png" />
-						<p>刨切</p>
+					<div id="coordinate">
+						<img src="img/coordinate.png" />
+						<p>坐标</p>
 					</div>
 					<div>
 						<img src="img/fuwei.png" />
@@ -98,7 +98,7 @@
 						<img src="img/jiegoushu.png" />
 						<p>结构树</p>
 					</div>
-					<div id="baozha" onclick="toggleInput('.baozha')">
+					<div id="blast">
 						<img src="img/baozha.png" />
 						<p>爆炸</p>
 					</div>
@@ -124,7 +124,7 @@
 					</div>
 				</li>
 				<li>
-					<div onclick="fullScreen()">
+					<div id="fullScreen">
 						<img src="img/quanping.png" />
 						<p>全屏</p>
 					</div>
@@ -134,24 +134,27 @@
 					</div>
 				</li>
 				<li>
-					<div class="beijingse" onclick="toggleInput('.beijingse')">
+					<div id="background" onclick="toggleInput('.beijingse')">
 						<img src="img/beijingse.png" />
 						<p>背景色</p>
-
+					</div>
+					<div>
+						<img src="img/baoqie.png" />
+						<p>刨切</p>
 					</div>
 				</li>
 			</ul>
 		</div>
 
-		<div class="baozhaDiv">
-			<input type="range" name="range" id="range" min="0" max="30" value="0" data-rangeslider/>
+		<div id="blastDiv">
+			<input type="range" name="range" id="blastRange" min="0" max="30" value="0" data-rangeslider/>
 		</div>
 
-		<div class="beijingseDiv">
-			<input type="range" name="range" id="range" min="0" max="50" value="0" data-rangeslider/>
+		<div id="backgroundDiv">
+			<input type="range" name="range" id="backgroundRange" min="0" max="50" value="0" data-rangeslider/>
 		</div>
 
-		<div class="treeSelect"></div>
+		<div class="treeSelect show"></div>
 		<!--<div class="table">
 			<div>
 				爆炸效果
@@ -173,6 +176,23 @@
 			mtl:'08ZDT_HT.mtl'
 		})
 		
+		//切换菜单
+		$("#toggleMenu").click((e) => {
+			var src = $(e.target).attr("src");
+			if($("#menu").width() == 78) {
+				$(e.target).attr("src", src.replace("open", "close"))
+				$("#menu").width(176)
+			} else {
+				$(e.target).attr("src", src.replace("close", "open"))
+				$("#menu").width(78)
+			}
+		})
+		
+		//视图
+		$("#shitu").click(() => {
+			$(".shitu > ul").toggle(200);
+		})
+		
 		//重置
 		getEl("#reset").onclick = function(){
 			diyThree.reset();
@@ -188,7 +208,43 @@
 			diyThree.showTree()
 		}
 		
-		//
+		getEl("#coordinate").onclick = function(){
+			diyThree.toggleAxisHelper();
+		}
+		
+		getEl("#fullScreen").onclick = function(){
+			diyThree.fullScreen()
+		}
+		
+		getEl("#blast").onclick = function(){
+			toggleInput('#blast')
+		};
+		
+		getEl("#background").onclick = function(){
+			toggleInput('#background')
+		}
+		
+		
+
+		//range插件
+		function toggleInput(el) {
+			console.dir($(el)[0])
+			let x = $(el)[0].offsetLeft + 50 + 58;
+			let y = $(el)[0].offsetTop + 20 + 30 - $("#menu>ul")[0].scrollTop;
+
+			$(el + "Div").css({
+				'left': x + "px",
+				'top': y + 'px'
+			}).toggle(200);
+		}
+		
+		$('body').click((e)=>{
+			if(e.target.tagName == "CANVAS"){
+				$("#blastDiv,#backgroundDiv").hide()
+			}
+		})
+		
+		
 		
 		console.log(diyThree)
 	</script>
