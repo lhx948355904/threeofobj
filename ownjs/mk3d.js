@@ -1,3 +1,5 @@
+//import {  } from "three"
+
 class Lq {
 	constructor(options) {
 		this.options = options;
@@ -211,13 +213,12 @@ class Lq {
 
 	// 初始化轨迹球控件
 	initControls() {
-		this.mouseControls = new THREE.TrackballControls(this.camera, this.renderer.domElement);
-		this.mouseControls.staticMoving = false;
-		this.mouseControls.rotateSpeed = 0.5; // 旋转速度
-		this.mouseControls.zoomSpeed = 0.4; // 缩放速度
-		this.mouseControls.panSpeed = 0.1; // 平controls
-		//		this.controls.noRotate = true;
-		//		this.controls.noPan = true;
+		this.controls = new THREE.TrackballControls(this.camera, this.renderer.domElement);
+		this.controls.staticMoving = false;
+		this.controls.rotateSpeed = 0.5; // 旋转速度
+		this.controls.zoomSpeed = 0.4; // 缩放速度
+		this.controls.panSpeed = 0.1; // 平controls
+//				this.controls.noPan = true;
 	}
 
 	// 改变对象材质属性
@@ -360,11 +361,11 @@ class Lq {
 			});
 			// 开始拖拽
 			dragControls.addEventListener('dragstart', function(event) {
-				that.mouseControls.enabled = false;
+				that.controls.enabled = false;
 			});
 			// 拖拽结束
 			dragControls.addEventListener('dragend', function(event) {
-				that.mouseControls.enabled = true;
+				that.controls.enabled = true;
 			});
 		}
 
@@ -415,8 +416,8 @@ class Lq {
 
 		// 更新控件
 		function update() {
-			that.mouseControls.update();
-			that.mouseControls.handleResize();
+			that.controls.update();
+			that.controls.handleResize();
 
 		}
 
@@ -436,8 +437,45 @@ class Lq {
 			addEventListener('click', onMouseClick, false);
 			addEventListener('resize', onWindowResize, false);
 			addEventListener('keydown', onKeyDown, false);
+			
+			
+			$('canvas').on('mousewheel', function ( ev ){
+		        var factor = 1;
+		
+		        var WIDTH = window.innerWidth;
+		        var HEIGHT = window.innerHeight;
+		
+		        //将鼠标的屏幕坐标转换为NDC坐标
+		        var mX = ( ev.clientX / WIDTH ) * 2 - 1;
+		        var mY = - ( ev.clientY / HEIGHT ) * 2 + 1;
+		
+		        //这里定义深度值为0.5，深度值越大，意味着精度越高
+		        var vector = new THREE.Vector3(mX, mY, 0.5 );
+		        //将鼠标坐标转换为3D空间坐标
+		        vector.unproject(that.camera);
+		
+		        //获得从相机指向鼠标所对应的3D空间点的射线（归一化）
+		        vector.sub( that.camera.position ).normalize();
+		
+		        if( ev.originalEvent.deltaY < 0 ){
+		            that.camera.position.x += vector.x * factor;
+		            that.camera.position.y += vector.y * factor;
+		            that.camera.position.z += vector.z * factor;
+		            that.controls.target.x += vector.x * factor;
+		            that.controls.target.y += vector.y * factor;
+		            that.controls.target.z += vector.z * factor;
+		        } else{
+		            that.camera.position.x -= vector.x * factor;
+		            that.camera.position.y -= vector.y * factor;
+		            that.camera.position.z -= vector.z * factor;
+		            that.controls.target.x -= vector.x * factor;
+		            that.controls.target.y -= vector.y * factor;
+		            that.controls.target.z -= vector.z * factor;
+		        }
+		    });
 
 		}
+		
 
 		function animate() {
 			requestAnimationFrame(animate);
